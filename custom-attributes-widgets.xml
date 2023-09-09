@@ -1,0 +1,41 @@
+<annotation>
+	<folder>labelImg</folder>
+	<filename>custom-attributes-widgets.png</filename>
+	<path>/home/hiro/git/labelImg/custom-attributes-widgets.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1305</width>
+		<height>713</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<attributes>
+		<attribute key="untruth">asdf</attribute>
+		<attribute key="untruth-count">sdf</attribute>
+		<attribute key="quality"/>
+		<attribute key="light"/>
+		<attribute key="weather"/>
+	</attributes>
+	<object>
+		<name>dd</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<attributes>
+			<attribute key="aspect"/>
+			<attribute key="quality"/>
+			<attribute key="cardinality">asdf</attribute>
+			<attribute key="box-score">asdf</attribute>
+			<attribute key="class-error">asdf</attribute>
+			<attribute key="class-error-score">asdf</attribute>
+		</attributes>
+		<bndbox>
+			<xmin>670</xmin>
+			<ymin>255</ymin>
+			<xmax>834</xmax>
+			<ymax>407</ymax>
+		</bndbox>
+	</object>
+</annotation>

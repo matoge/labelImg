@@ -46,6 +46,7 @@ from libs.yolo_io import YoloReader
 from libs.yolo_io import TXT_EXT
 from libs.ustr import ustr
 from libs.version import __version__
+from libs.sam import SamService
 
 # import custom attributes module
 from customAttributes import AttributesManager
@@ -241,6 +242,15 @@ class MainWindow(QMainWindow, WindowMixin):
         openPrevImg = action('&Prev Image', self.openPrevImg,
                              'a', 'prev', u'Open Prev')
 
+        applySamSelected = action('&Apply Sam Selected', self.applySamSelected,
+                             'h', 'applysamselected', u'Apply Sam Selected')
+        
+        selectNextShape = action('&Select Next Shape', self.canvas.selectNextShape,
+                             'e', 'selectNextShape', u'Select Next Shape')
+
+        applyLabelAll = action('&Apply Label All', self.applyLabelAll,
+                             'l', 'applyLabelAll', u'Apply Label All')
+
         verify = action('&Verify Image', self.verifyImg,
                         'space', 'verify', u'Verify Image')
 
@@ -389,7 +399,7 @@ class MainWindow(QMainWindow, WindowMixin):
             labels, advancedMode, None,
             hideAll, showAll, None,
             zoomIn, zoomOut, zoomOrg, None,
-            fitWindow, fitWidth))
+            fitWindow, fitWidth, applySamSelected, selectNextShape, applyLabelAll))
 
         self.menus.file.aboutToShow.connect(self.updateFileMenu)
 
@@ -402,12 +412,12 @@ class MainWindow(QMainWindow, WindowMixin):
         self.tools = self.toolbar('Tools')
         self.actions.beginner = (
             open, opendir, changeSavedir, openNextImg, openPrevImg, verify, save, save_format, None, create, copy, delete, None,
-            zoomIn, zoom, zoomOut, fitWindow, fitWidth)
+            zoomIn, zoom, zoomOut, fitWindow, fitWidth, applySamSelected, selectNextShape, applyLabelAll)
 
         self.actions.advanced = (
             open, opendir, changeSavedir, openNextImg, openPrevImg, save, save_format, None,
             createMode, editMode, None,
-            hideAll, showAll)
+            hideAll, showAll, applySamSelected, selectNextShape)
 
         self.statusBar().showMessage('%s started.' % __appname__)
         self.statusBar().show()
@@ -479,8 +489,22 @@ class MainWindow(QMainWindow, WindowMixin):
         self.statusBar().addPermanentWidget(self.labelCoordinates)
 
         # Open Dir if deafult file
-        if self.filePath and os.path.isdir(self.filePath):
-            self.openDirDialog(dirpath=self.filePath)
+        # if self.filePath and os.path.isdir(self.filePath):
+        #     self.openDirDialog(dirpath=self.filePath)
+
+    def applySamSelected(self):
+        if not self.canvas.selectedShape:
+            return
+        
+        points = self.canvas.selectedShape.points
+        box = [points[0].x(), points[0].y(), points[2].x(), points[2].y()]
+        result = self.sam_service.send_image_for_processing(box)
+        try:
+            # Box と マスクが返ってくるので、マスク画像をアノテーションでセットする
+            self.canvas.setPoints(self.canvas.selectedShape, result['box'])
+            self.setDirty()
+        except Exception as e:
+            print('error')
 
     ## Support Functions ##
     def set_format(self, save_format):
@@ -577,6 +601,20 @@ class MainWindow(QMainWindow, WindowMixin):
         if items:
             return items[0]
         return None
+    
+    def applyLabelAll(self):
+        target_text = None
+        for item in self.labelList.selectedItems():
+            if item.isSelected():
+                target_text = item.text()
+        if target_text is None:
+            return
+
+        for item, _ in self.itemsToShapes.items():
+            item.setText(target_text)
+            self.labelItemChanged(item)
+        self.canvas.update()
+        self.canvas.repaint()
 
     def addRecentFile(self, filePath):
         if filePath in self.recentFiles:
@@ -989,10 +1027,12 @@ class MainWindow(QMainWindow, WindowMixin):
                 self.imageData = self.labelFile.imageData
                 self.lineColor = QColor(*self.labelFile.lineColor)
                 self.fillColor = QColor(*self.labelFile.fillColor)
+                self.sam_service = SamService(self.labelFile.imagePath)
             else:
                 # Load image:
                 # read data first and store for saving into label file.
                 self.imageData = read(unicodeFilePath, None)
+                self.sam_service = SamService(unicodeFilePath)
                 self.labelFile = None
 
             image = QImage.fromData(self.imageData)
@@ -1174,6 +1214,7 @@ class MainWindow(QMainWindow, WindowMixin):
         else:
             defaultOpenDirPath = os.path.dirname(self.filePath) if self.filePath else '.'
 
+        from IPython import embed; embed()
         targetDirPath = ustr(QFileDialog.getExistingDirectory(self,
                                                      '%s - Open Directory' % __appname__, defaultOpenDirPath,
                                                      QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks))
@@ -1447,11 +1488,11 @@ def get_main_app(argv=[]):
     app.setWindowIcon(newIcon("app"))
     # Tzutalin 201705+: Accept extra agruments to change predefined class file
     # Usage : labelImg.py image predefClassFile saveDir
-    win = MainWindow(argv[1] if len(argv) >= 2 else None,
-                     argv[2] if len(argv) >= 3 else os.path.join(
+    win = MainWindow(argv[2] if len(argv) >= 2 else None,
+                     argv[1] if len(argv) >= 3 else os.path.join(
                          os.path.dirname(sys.argv[0]),
                          'data', 'predefined_classes.txt'),
-                     argv[3] if len(argv) >= 4 else None)
+                     argv[2])
     win.show()
     return app, win
 

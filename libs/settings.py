@@ -7,7 +7,7 @@ class Settings(object):
         # Be default, the home will be in the same folder as labelImg
         home = os.path.expanduser("~")
         self.data = {}
-        self.path = os.path.join(home, '.labelImgSettings.pkl')
+        self.path = os.path.join(home, '.labelImgSettings2.pkl')
 
     def __setitem__(self, key, value):
         self.data[key] = value
@@ -28,6 +28,7 @@ class Settings(object):
         return False
 
     def load(self):
+        print(self.path)
         if os.path.exists(self.path):
             with open(self.path, 'rb') as f:
                 self.data = pickle.load(f)

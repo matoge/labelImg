@@ -84,7 +84,7 @@ class Shape(object):
     def setOpen(self):
         self._closed = False
 
-    def paint(self, painter):
+    def paint(self, painter, font_size=8):
         if self.points:
             color = self.select_line_color if self.selected else self.line_color
             pen = QPen(color)
@@ -119,7 +119,7 @@ class Shape(object):
                 min_y = min(min_y, point.y())
             if min_x != sys.maxsize and min_y != sys.maxsize:
                 font = QFont()
-                font.setPointSize(8)
+                font.setPointSize(16)
                 font.setBold(True)
                 painter.setFont(font)
                 if(self.label == None):

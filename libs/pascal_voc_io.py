@@ -152,6 +152,7 @@ class PascalVocReader:
         self.filepath = filepath
         self.verified = False
         self.attributes = {}
+        self.class_name = None
         try:
             self.parseXML()
         except:
@@ -175,7 +176,12 @@ class PascalVocReader:
         assert self.filepath.endswith(XML_EXT), "Unsupport file format"
         parser = etree.XMLParser(encoding=ENCODE_METHOD)
         xmltree = ElementTree.parse(self.filepath, parser=parser).getroot()
-        filename = xmltree.find('filename').text
+
+        try:
+            self.class_name = xmltree.find('class_name').text
+        except:
+            self.class_name = None
+
         try:
             verified = xmltree.attrib['verified']
             if verified == 'yes':
@@ -184,7 +190,6 @@ class PascalVocReader:
             self.verified = False
 
         attributesManager.read_attributes_from_element( xmltree, self.attributes )
-
         for object_iter in xmltree.findall('object'):
             bndbox = object_iter.find("bndbox")
             label = object_iter.find('name').text

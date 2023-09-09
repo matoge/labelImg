@@ -7,6 +7,9 @@ import time
 from threading import Thread
 from threading import Event
 import shutil
+import requests
+import base64
+
 
 from ast import literal_eval as make_tuple
 
@@ -148,6 +151,26 @@ class AttributesManager( AbstractAttributesWidgets ):
     def update_slideshow_fps( self, slideshow_fps ):
         self.slideshow_fps = int( slideshow_fps )
         return True
+    
+    def auto_annotate(self):
+        # ここで、requests を撮って画像を送る
+        server_url = 'http://localhost:5000/process_image'  # Change this to the actual server URL
+
+        data = {
+            'image': base64.b64encode(self.mainWindow.imageData).decode()
+            # Include any other data you want to send to the server
+        }
+
+        response = requests.post(server_url, json=data)
+
+        if response.status_code == 200:
+            result = response.json()
+            print('Recognition results:', result)
+        else:
+            print('Error:', response.text)
+
+        # Set annotations.
+        from IPython import embed; embed()
 
     def slideshow( self ):
 
@@ -188,8 +211,6 @@ class AttributesManager( AbstractAttributesWidgets ):
             print("Starting slideshow: fps={}, spf={}, interval={}".format( fps, spf, interval ))
 
             local()
-
-
 
 
     # try to copy the current image file and create a new label file at the destination
@@ -402,6 +423,12 @@ class AttributesManager( AbstractAttributesWidgets ):
                         "type": "button",
                         "action": lambda : self.slideshow( )
                     },
+                    "auto": {
+                        "order": self.next_index(),
+                        "tooltip": "Run through the image set.",
+                        "type": "button",
+                        "action": lambda : self.auto_annotate( )
+                    },
 
                     "run_fps": {
                         "order": self.next_index(),
@@ -440,124 +467,71 @@ class AttributesManager( AbstractAttributesWidgets ):
     # same action in all cases from AttributesWidgets
     def get_image_attribute_definitions( self ):
         return {
-            "untruth": {
+            "class_name": {
                 "order": self.next_index(),
                 "default": "",
-                "type": "text",
+                "type": "label",
                 "action": self.update_image_attributes
             },
-            "untruth-count": {
-                "order": self.next_index(),
-                "default": 0,
-                "type": "text",
-                "action": self.update_image_attributes
-            },
-            "quality": {
-                "order": self.next_index(),
-                "tooltip": "The overall image quality: focus, composition, interest, whatever",
-                "default": "ok",
-                "type": "combo",
-                "choices": [
-                    "bad",
-                    "poor",
-                    "ok",
-                    "good",
-                    "excellent"
-                ],
-                "action": self.update_image_attributes
-            },
-            "light": {
-                "order": self.next_index(),
-                "tooltip": "The quality of light in the image",
-                "default": "",
-                "type": "combo",
-                "choices": [
-                    "glary",
-                    "sunny",
-                    "bright",
-                    "cloudy",
-                    "dull",
-                    "twilight",
-                    "dark"
-                ],
-                "action": self.update_image_attributes
-            },
-            "weather": {
-                "order": self.next_index(),
-                "tooltip": "The quality of light in the image",
-                "default": "",
-                "type": "combo",
-                "choices": [
-                    "sunny",
-                    "overcast",
-                    "rainy",
-                    "snowy"
-                ],
-                "action": self.update_image_attributes
-            }
+            # "untruth-count": {
+            #     "order": self.next_index(),
+            #     "default": 0,
+            #     "type": "text",
+            #     "action": self.update_image_attributes
+            # },
+            # "quality": {
+            #     "order": self.next_index(),
+            #     "tooltip": "The overall image quality: focus, composition, interest, whatever",
+            #     "default": "ok",
+            #     "type": "combo",
+            #     "choices": [
+            #         "bad",
+            #         "poor",
+            #         "ok",
+            #         "good",
+            #         "excellent"
+            #     ],
+            #     "action": self.update_image_attributes
+            # },
+            # "light": {
+            #     "order": self.next_index(),
+            #     "tooltip": "The quality of light in the image",
+            #     "default": "",
+            #     "type": "combo",
+            #     "choices": [
+            #         "glary",
+            #         "sunny",
+            #         "bright",
+            #         "cloudy",
+            #         "dull",
+            #         "twilight",
+            #         "dark"
+            #     ],
+            #     "action": self.update_image_attributes
+            # },
+            # "weather": {
+            #     "order": self.next_index(),
+            #     "tooltip": "The quality of light in the image",
+            #     "default": "",
+            #     "type": "combo",
+            #     "choices": [
+            #         "sunny",
+            #         "overcast",
+            #         "rainy",
+            #         "snowy"
+            #     ],
+            #     "action": self.update_image_attributes
+            # }
         }
 
 
     # same action in all cases from AttributesWidgets
     def get_label_attribute_definitions( self ):
         return {
-            "aspect": {
-                "order": self.next_index(),
-                "tooltip": "How is the object oriented with respect to it's face",
-                "default": "back",
-                "type": "combo",
-                "choices": [
-                    "front",
-                    "back",
-                    "rear",
-                    "left",
-                    "right",
-                    "top",
-                    "bottom",
-                    "front left",
-                    "front right",
-                    "rear left",
-                    "rear right"
-                ],
-                "action": self.update_label_attributes
-            },
-            "quality": {
-                "order": self.next_index(),
-                "tooltip": "What span of the the category's features does this object exhibit",
-                "default": "ok",
-                "type": "combo",
-                "choices": [
-                    "bad",
-                    "poor",
-                    "ok",
-                    "good",
-                    "excellent"
-                ],
-                "action": self.update_label_attributes
-            },
-            "cardinality": {
-                "order": self.next_index(),
-                "tooltip": "How much of a stereotype, or archetype, of the category does this object represent: 1 - a little, 5 - a lot",
-                "type": "text",
-                "action": self.update_label_attributes
-            },
-            "box-score": {
-                "order": self.next_index(),
-                "default": "",
-                "type": "text",
-                "action": self.update_image_attributes
-            },
-            "class-error": {
-                "order": self.next_index(),
-                "default": "",
-                "type": "text",
-                "action": self.update_image_attributes
-            },
-            "class-error-score": {
+            "model-number": {
                 "order": self.next_index(),
                 "default": "",
                 "type": "text",
                 "action": self.update_image_attributes
             }
-
         }

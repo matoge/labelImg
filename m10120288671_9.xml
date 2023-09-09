@@ -1,0 +1,26 @@
+<annotation>
+	<folder>New 3DS LL</folder>
+	<filename>m10120288671_9.jpg</filename>
+	<path>/media/hiro/nas/dataset_nas/hardware2/New 3DS LL/m10120288671_9.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>810</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>3dsserial</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>267</xmin>
+			<ymin>617</ymin>
+			<xmax>467</xmax>
+			<ymax>661</ymax>
+		</bndbox>
+	</object>
+</annotation>

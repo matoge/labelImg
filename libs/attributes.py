@@ -132,8 +132,9 @@ class AttributesWidgets():
                 widget.textEdited.connect( action )
                 
         elif type == "label":
-            widget = QLabel( self.mainWindow )
-                
+            widget = QLineEdit(self.mainWindow)
+            widget.setReadOnly(True)
+            
         elif type == "button":
             widget = QPushButton( self.mainWindow )
             widget.setText( key )

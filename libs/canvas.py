@@ -229,6 +229,15 @@ class Canvas(QWidget):
             if self.drawing():
                 self.handleDrawing(pos)
 
+    def setPoints(self, shape, box):
+        shape.points = [
+            QPointF(box[0], box[1]),
+            QPointF(box[2], box[1]),
+            QPointF(box[2], box[3]),
+            QPointF(box[0], box[3])
+        ]
+        self.repaint()
+
     def endMove(self, copy=False):
         assert self.selectedShape and self.selectedShapeCopy
         shape = self.selectedShapeCopy
@@ -291,6 +300,28 @@ class Canvas(QWidget):
         self.setHiding()
         self.selectionChanged.emit(True)
         self.update()
+
+    def selectNextShape(self):
+        if not self.selectedShape:
+            if len(self.shapes) > 0:
+                self.selectShape(self.shapes[0])
+        else:
+            for i, shape in enumerate(self.shapes):
+                if shape == self.selectedShape:
+                    next_shape = self.shapes[(i + 1) % len(self.shapes)]
+                    self.selectShape(next_shape)
+                    break
+        self.repaint()
+
+    def applyLabelAll(self):
+        if not self.selectedShape:
+            return
+        
+        for shape in self.shapes:
+            shape.label = self.selectedShape.label
+        self.update()
+        self.repaint()
+        self.parent.upd
 
     def selectShapePoint(self, point):
         """Select the first shape created which contains this point."""
@@ -414,7 +445,13 @@ class Canvas(QWidget):
                 shape.fill = shape.selected or shape == self.hShape
                 shape.paint(p)
         if self.current:
-            self.current.paint(p)
+                # Widgetの大きさに基づいてフォントサイズを計算
+            widget_width = self.width()
+            # 例として、Widgetの幅を基準にしてフォントサイズを計算
+            # この計算式はあくまで一例で、実際のUIの要件に応じて調整する必要があります
+            font_size = int(widget_width * 0.05) # 例：幅の5%をフォントサイズとする
+
+            self.current.paint(p, font_size)
             self.line.paint(p)
         if self.selectedShapeCopy:
             self.selectedShapeCopy.paint(p)
