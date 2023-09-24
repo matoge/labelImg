@@ -1154,7 +1154,6 @@ class MainWindow(QMainWindow, WindowMixin):
 
         # Make sure that filePath is a regular python string, rather than QString
         filePath = str(filePath)
-
         unicodeFilePath = ustr(filePath)
         # Tzutalin 20160906 : Add file list and dock to move faster
         # Highlight the file item
@@ -1378,8 +1377,6 @@ class MainWindow(QMainWindow, WindowMixin):
             defaultOpenDirPath = os.path.dirname(
                 self.filePath) if self.filePath else '.'
 
-        from IPython import embed
-        embed()
         targetDirPath = ustr(
             QFileDialog.getExistingDirectory(
                 self, '%s - Open Directory' % __appname__, defaultOpenDirPath,

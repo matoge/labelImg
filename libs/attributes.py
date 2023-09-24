@@ -35,7 +35,10 @@ def read_attributes_from_element( parent_element, attributes ):
         attributes_element = parent_element.find("attributes")
         if attributes_element is not None:
             for attribute_element in attributes_element.findall("attribute"):
-                attributes[ attribute_element.get( "key" ) ] = attribute_element.text
+                if attribute_element.text == "None":
+                    attributes[ attribute_element.get( "key" ) ] =""
+                else:
+                    attributes[ attribute_element.get( "key" ) ] = attribute_element.text
     except Exception as e:
         print( "Failed to read attributes: {}".format( e ) )
 
@@ -62,8 +65,12 @@ class AttributesWidgets():
 
     def maybe_update_attribute( self, key, existing_attributes, new_value ):
         existing_value = None
+        if key in ['model_number', 'class_name']:
+            existing_value = ""
+
         if key in existing_attributes:
             existing_value = existing_attributes[ key ]
+
         if existing_value != new_value:
             existing_attributes[ key ] = new_value
             self.mainWindow.setDirty()

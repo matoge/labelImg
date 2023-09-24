@@ -462,8 +462,6 @@ class AttributesManager( AbstractAttributesWidgets ):
         return g_defs
 
 
-
-
     # same action in all cases from AttributesWidgets
     def get_image_attribute_definitions( self ):
         return {
@@ -537,7 +535,7 @@ class AttributesManager( AbstractAttributesWidgets ):
             "class_name": {
                 "order": self.next_index(),
                 "default": "",
-                "type": "label",
+                "type": "text",
                 "action": self.update_label_attributes
             }
         }

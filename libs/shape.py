@@ -124,7 +124,11 @@ class Shape(object):
                 painter.setFont(font)
                 if(self.label == None):
                     self.label = ""
-                painter.drawText(min_x, min_y, self.getTitle() )
+
+                text = self.getTitle()
+                if self.attributes and self.attributes.get("class_name", ""):
+                    text = text + ":" + self.attributes['class_name'][0:8]
+                painter.drawText(min_x, min_y, text )
 
             if self.fill:
                 color = self.select_fill_color if self.selected else self.fill_color

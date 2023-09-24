@@ -445,7 +445,7 @@ class Canvas(QWidget):
                 shape.fill = shape.selected or shape == self.hShape
                 shape.paint(p)
         if self.current:
-                # Widgetの大きさに基づいてフォントサイズを計算
+            # Widgetの大きさに基づいてフォントサイズを計算
             widget_width = self.width()
             # 例として、Widgetの幅を基準にしてフォントサイズを計算
             # この計算式はあくまで一例で、実際のUIの要件に応じて調整する必要があります
