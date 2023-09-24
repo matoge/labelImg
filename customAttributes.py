@@ -394,20 +394,20 @@ class AttributesManager( AbstractAttributesWidgets ):
                         "action": self.copy_to_destination_class
                     },
 
-                    "move destination": {
-                        "order": self.next_index(),
-                        "tooltip": "The root directory for class directories (to which the current image and it's PASCAL VOC file will be moved)",
-                        "default": "D:/animals-count/data/estuarybank_12_v06/(rejects)",
-                        "type": "text",
-                        "action": self.update_move_destination
-                    },
+                    # "move destination": {
+                    #     "order": self.next_index(),
+                    #     "tooltip": "The root directory for class directories (to which the current image and it's PASCAL VOC file will be moved)",
+                    #     "default": "D:/animals-count/data/estuarybank_12_v06/(rejects)",
+                    #     "type": "text",
+                    #     "action": self.update_move_destination
+                    # },
 
-                    "move": {
-                        "order": self.next_index(),
-                        "tooltip": "Move the current image and it's PASCAL VOC file the to the class folder in move destination",
-                        "type": "button",
-                        "action": self.move
-                    },
+                    # "move": {
+                    #     "order": self.next_index(),
+                    #     "tooltip": "Move the current image and it's PASCAL VOC file the to the class folder in move destination",
+                    #     "type": "button",
+                    #     "action": self.move
+                    # },
 
                     "set dirty": {
                         "order": self.next_index(),
@@ -528,10 +528,16 @@ class AttributesManager( AbstractAttributesWidgets ):
     # same action in all cases from AttributesWidgets
     def get_label_attribute_definitions( self ):
         return {
-            "model-number": {
+            "model_number": {
                 "order": self.next_index(),
                 "default": "",
                 "type": "text",
-                "action": self.update_image_attributes
+                "action": self.update_label_attributes
+            },
+            "class_name": {
+                "order": self.next_index(),
+                "default": "",
+                "type": "label",
+                "action": self.update_label_attributes
             }
         }
